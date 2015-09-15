@@ -157,7 +157,23 @@
     this.prefs = prefs;
 
     this.search = function(cb) {
-      // TODO: Implement this.
+      var params = {
+        count : self.prefs.count,
+        radius : self.prefs.radius,
+        tags : self.prefs.tags.join(','),
+        center : self.prefs.position.lat + ',' + self.prefs.position.lng,
+      };
+      var url = "//" + window.location.hostname  + ":5000/search";
+      $.ajax(
+        {
+          url : url,
+          dataType:"jsonp",
+          crossDomain: true,
+          success: function(data) {
+            cb(false, data.products);
+          },
+        }
+      );
     };
   };
 
