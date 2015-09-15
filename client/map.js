@@ -157,16 +157,16 @@
     this.prefs = prefs;
 
     this.search = function(cb) {
-      var params = {
-        count : self.prefs.count,
-        radius : self.prefs.radius,
-        tags : self.prefs.tags.join(','),
-        center : self.prefs.position.lat + ',' + self.prefs.position.lng,
-      };
-      var url = "//" + window.location.hostname  + ":5000/search";
       $.ajax(
         {
-          url : url,
+          url : "//" + window.location.hostname  + ":5000/search",
+          data: {
+            count : self.prefs.count,
+            radius : self.prefs.radius,
+            tags : self.prefs.tags.join(','),
+            lat : self.prefs.position.lat,
+            lng : self.prefs.position.lng,
+          },
           dataType:"jsonp",
           crossDomain: true,
           success: function(data) {

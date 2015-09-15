@@ -66,3 +66,6 @@ A good rule of thumb is to submit something that you're proud of. Good luck!
 
 *N.B: Your code is provided solely for the purposes of this exercise and will not be used by
 Acme under any circumstances.*
+
+links:
+https://gist.github.com/farazdagi/1089923
