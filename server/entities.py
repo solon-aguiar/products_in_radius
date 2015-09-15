@@ -1,20 +1,15 @@
-from geo_location import convert_to_cartesian
 
 class Shop:
-    def __init__(self,shop_id,lat,lng):
-        self.shop_id = shop_id
+    def __init__(self,name,lat,lng):
         self.lat = float(lat)
         self.lng = float(lng)
-        self.tags = []
+        self.name = name
+        self.products = []
 
-    def add_tag(self,tag):
-        self.tags.append(tag)
+    def add_product(self,product):
+        self.products.append(product)
 
-class ProductInShop:
-    def __init__(self,shop,title,popularity):
-        self.shop = shop
+class Product:
+    def __init__(self,title,popularity):
         self.title = title
         self.popularity = popularity
-
-    def location(self):
-        return convert_to_cartesian(self.shop.lat, self.shop.lng)

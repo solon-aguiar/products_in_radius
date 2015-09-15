@@ -10,10 +10,17 @@ from server.parser import Parser
 class TestParser:
     def test_reads_all_data(self):
         parser = Parser(root + "/test_data")
-        products = parser.parse()
+        results = parser.parse()
 
-        assert len(products) == 5
-        assert ["light saber","flag","soccer ball","darts","nerf gun"] == [product.title for product in products]
-        assert [0.9,0.7,0.33,0.6,0.95] == [product.popularity for product in products]
+        tags = results[0]
+        assert len(tags.values()) == 2
+        assert [shop.name for shop in tags["home_office"]] == ["acme","tictail"]
+        assert [shop.name for shop in tags["it"]] == ["acme"]
 
+        shops = results[1]
+        assert [shop.name for shop in shops] == ["acme","tictail"]
+        assert [(shop.lat,shop.lng) for shop in shops] == [(1,0),(2,1)]
+        assert [len(shop.products) for shop in shops] == [2,3]
+        assert [product.title for product in shops[0].products] == ["light saber","nerf gun"]
+        assert [[product.title for product in shops[0].products] =="flag","soccer ball","darts"]
 
