@@ -2,7 +2,7 @@
 
 import csv
 from entities import *
-from shop_locator import *
+from geo_location import ShopLocator
 from sets import Set
 
 class Parser:

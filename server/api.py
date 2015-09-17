@@ -2,12 +2,12 @@
 
 from functools import wraps
 from flask import Blueprint, current_app, jsonify, request
-from geo_location import EARTH_RADIUS_IN_KM
-from parser import *
-from shop_locator import *
+from geo_location import EARTH_RADIUS_IN_KM, ShopLocator
+from data import *
 
 api = Blueprint('api', __name__)
 finder = None
+MAXIMUM_QUANTITY = 100
 
 def data_path():
     return current_app.config['DATA_PATH']
@@ -18,8 +18,8 @@ def support_jsonp(f):
     def decorated_function(*args, **kwargs):
         callback = request.args.get('callback', False)
         if callback:
-            content = str(callback) + '(' + str(f().data) + ')'
-            return current_app.response_class(content, mimetype='application/json')
+            content = str(callback) + '(' + str(f(*args,**kwargs).data) + ')'
+            return current_app.response_class(content, mimetype='application/javascript')
         else:
             return f(*args, **kwargs)
     return decorated_function
@@ -45,7 +45,7 @@ def check_params(f):
         if quantity == None:
             raise ValueError("Quantity cannot be null")
         quantity = int(quantity)
-        if quantity <= 0 or quantity >= 100:
+        if quantity <= 0 or quantity >= MAXIMUM_QUANTITY:
             raise ValueError("Invalid value for quantity. Supported 0 < quantity < 100")
         return f(*args, **kwargs)
     return decorated_function
@@ -60,7 +60,6 @@ def get_params(request):
 
     if tags_args != None:
         tags = str(tags_args).split(",")
-        print tags
 
     return (latitude,longitude),radius,quantity,tags
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 class Shop:
     def __init__(self,name,lat,lng):
