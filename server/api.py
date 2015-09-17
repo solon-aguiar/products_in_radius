@@ -59,7 +59,10 @@ def get_params(request):
     tags = []
 
     if tags_args != None:
-        tags = str(tags_args).split(",")
+        if str(tags_args).strip() == "":
+            tags = []
+        else:
+            tags = str(tags_args).split(",")
 
     return (latitude,longitude),radius,quantity,tags
 

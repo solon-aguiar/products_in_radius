@@ -11,6 +11,7 @@ def configure_settings(app, settings_override):
         'DEBUG': True,
         'TESTING': False,
         'DATA_PATH': data_path,
+        'FINDER': None,
     })
     if settings_override:
         app.config.update(settings_override)

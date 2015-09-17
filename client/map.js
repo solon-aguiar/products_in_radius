@@ -161,7 +161,7 @@
         {
           url : "//" + window.location.hostname  + ":5000/search",
           data: {
-            count : self.prefs.count,
+            quantity : self.prefs.count,
             radius : self.prefs.radius,
             tags : self.prefs.tags.join(','),
             lat : self.prefs.position.lat,
@@ -172,8 +172,10 @@
           success: function(data) {
             cb(false, data.products);
           },
-        }
-      );
+          error: function(data) {
+            cb(data.statusText,null);
+          },
+        });
     };
   };
 

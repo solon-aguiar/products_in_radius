@@ -43,6 +43,9 @@ def test_returns_a_list_of_products_and_its_locations(client):
     another_response = client.get("/search?radius=350&lat=59.3341&lng=18.065&quantity=10&&tags=sports")
     assert {'products': []} == another_response.json
 
-    another_response = client.get("/search?radius=350&lat=59.3341&lng=18.065&quantity=10&&tags=home_office,sports")
-    assert {'products': [{'popularity': '0.95', 'shop': {'lat': 59.33265, 'lng': 18.06061}, 'title': 'nerf gun'}, {'popularity': '0.9', 'shop': {'lat': 59.33265, 'lng': 18.06061}, 'title': 'light saber'}]} == response.json
+    multiple_tags_response = client.get("/search?radius=350&lat=59.3341&lng=18.065&quantity=10&&tags=home_office,sports")
+    assert {'products': [{'popularity': '0.95', 'shop': {'lat': 59.33265, 'lng': 18.06061}, 'title': 'nerf gun'}, {'popularity': '0.9', 'shop': {'lat': 59.33265, 'lng': 18.06061}, 'title': 'light saber'}]} == multiple_tags_response.json
+
+    empty_tags_response = client.get("/search?radius=350&lat=59.3341&lng=18.065&quantity=10&&tags=")
+    assert {'products': [{'popularity': '0.95', 'shop': {'lat': 59.33265, 'lng': 18.06061}, 'title': 'nerf gun'}, {'popularity': '0.9', 'shop': {'lat': 59.33265, 'lng': 18.06061}, 'title': 'light saber'}]} == empty_tags_response.json
 
