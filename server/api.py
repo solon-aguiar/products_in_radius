@@ -4,7 +4,7 @@ from functools import wraps
 from flask import Blueprint, current_app, jsonify, request
 from geo_location import convert_to_cartesian, euclidean_distance
 from parser import *
-from product_shop_locator import *
+from shop_locator import *
 
 api = Blueprint('api', __name__)
 
@@ -29,7 +29,7 @@ def search():
     print request
     distance = euclidean_distance(float(request.args.get("radius"))/1000.0)
     center = convert_to_cartesian(float(request.args.get("lat")),float(request.args.get("lng")))
-    products = ProductShopLocator(Parser(data_path()).parse()).products_within_distance(center,distance)
+    products = ShopLocator(Parser(data_path()).parse()).products_within_distance(center,distance)
     print len(products)
     sorted_products = sorted(products, key=lambda product: product.popularity)
     samples = sorted_products[0:10]
