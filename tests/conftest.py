@@ -52,7 +52,9 @@ def humanize_werkzeug_client(client_method):
 @pytest.fixture(scope='session', autouse=True)
 def app(request):
     app = create_app({
-        'TESTING': True
+        'TESTING': True,
+        'DATA_PATH': root + "/test_data",
+        'FINDER': None
     })
 
     # Establish an application context before running the tests.

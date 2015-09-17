@@ -7,6 +7,7 @@ from parser import *
 from shop_locator import *
 
 api = Blueprint('api', __name__)
+finder = None
 
 def data_path():
     return current_app.config['DATA_PATH']
@@ -46,31 +47,34 @@ def check_params(f):
         quantity = int(quantity)
         if quantity <= 0 or quantity >= 100:
             raise ValueError("Invalid value for quantity. Supported 0 < quantity < 100")
+        return f(*args, **kwargs)
     return decorated_function
 
 def get_params(request):
-    latitude = float(request.args.get("lng"))
+    latitude = float(request.args.get("lat"))
     longitude = float(request.args.get("lng"))
-    radius = int(request.args.get("lng"))
-    quantity = int(request.args.get("lng"))
-    tags = request.args.get("lng")
+    radius = int(request.args.get("radius"))
+    quantity = int(request.args.get("quantity"))
+    tags_args = request.args.get("tags")
+    tags = []
 
-    if tags == None:
-        tags = []
-    return latitude,longitude,radius,quantity,tags
+    if tags_args != None:
+        tags = str(tags_args).split(",")
+        print tags
+
+    return (latitude,longitude),radius,quantity,tags
+
+def finder():
+    if current_app.config['FINDER'] == None:
+        tags_mapping,shops = Parser(data_path()).parse()
+        current_app.config['FINDER'] = PopularProductsFinder(tags_mapping,shops)
+    return current_app.config['FINDER']
 
 @api.route('/search', methods=['GET'])
 @support_jsonp
 @check_params
 def search():
-    check_params(request)
-    distance = euclidean_distance(float(request.args.get("radius"))/1000.0)
-    center = convert_to_cartesian(float(request.args.get("lat")),float(request.args.get("lng")))
-    products = ShopLocator(Parser(data_path()).parse()).products_within_distance(center,distance)
-    print len(products)
-    sorted_products = sorted(products, key=lambda product: product.popularity)
-    samples = sorted_products[0:10]
-
-    return jsonify({'products': [{"shop":{"lng":product.shop.lng,"lat":product.shop.lat}, "title":product.title,"popularity":product.popularity} for product in samples]})
-    #return jsonify({'products': [{"shop":{"lng":18.060,"lat":59.332}, "title":"test","popularity":0.9}]})
+    center,radius,quantity,tags = get_params(request)
+    products = finder().most_popular_products(center,radius,tags,quantity)
+    return jsonify({'products': [{"shop":{"lng":product.lng,"lat":product.lat}, "title":product.title,"popularity":product.popularity} for product in products]})
 

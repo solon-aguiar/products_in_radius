@@ -14,22 +14,19 @@ class TestParser:
         results = parser.parse()
 
         tags = results[0]
-        assert len(tags.values()) == 2
+        assert len(tags.values()) == 3
         assert [shop.name for shop in tags["home_office"]] == ["acme","tictail"]
         assert [shop.name for shop in tags["it"]] == ["acme"]
+        assert [shop.name for shop in tags["sports"]] == ["tictail"]
 
         shops = results[1]
         assert [shop.name for shop in shops] == ["acme","tictail"]
-        assert [(shop.lat,shop.lng) for shop in shops] == [(1,0),(2,1)]
+        assert [(shop.lat,shop.lng) for shop in shops] == [(59.33265, 18.06061),(59.35419, 18.06364)]
         assert [len(shop.products) for shop in shops] == [2,3]
         assert [product.title for product in shops[0].products] == ["light saber","nerf gun"]
         assert [[product.title for product in shops[0].products] =="flag","soccer ball","darts"]
 
 class TestPopularProductsFinder:
-    same_location_shop = Shop("same location shop",59.33265,18.06061)
-    further_shop = Shop("far shop",59.35419,18.08681)
-    boundary_shop = Shop("shop in the boundary",59.33717,18.06637)
-
     search_coordinates = (59.3341,18.065)
     search_radius = 350
 
@@ -107,3 +104,41 @@ class TestPopularProductsFinder:
         products = finder.most_popular_products(self.search_coordinates,self.search_radius,[],1)
         assert len(products) == 1
         assert products[0].title == "harry potter"
+
+    def test_does_not_break_if_searched_tags_does_not_exist(self):
+        shop = Shop("close shop",59.33265,18.06061)
+        shop.add_product(Product("harry potter",0.9))
+
+        closer_shop = Shop("shop nearby",59.33265,18.06364)
+        closer_shop.add_product(Product("nike tiempo",0.9))
+
+        finder = PopularProductsFinder({"books":[shop],"sports":[closer_shop,shop]},[shop,closer_shop])
+
+        products = finder.most_popular_products(self.search_coordinates,self.search_radius,["movies"],1000)
+        assert len(products) == 0
+
+    def test_discards_a_search_tag_if_it_does_not_exist(self):
+        shop = Shop("close shop",59.33265,18.06061)
+        shop.add_product(Product("harry potter",0.9))
+
+        closer_shop = Shop("shop nearby",59.33265,18.06364)
+        closer_shop.add_product(Product("nike tiempo",0.9))
+
+        finder = PopularProductsFinder({"books":[shop],"sports":[closer_shop]},[shop,closer_shop])
+
+        products = finder.most_popular_products(self.search_coordinates,self.search_radius,["movies","sports"],1000)
+        assert len(products) == 1
+        assert products[0].title == "nike tiempo"
+
+    def test_returns_an_empty_list_if_no_products_with_tags_exist_within_the_search_range(self):
+        shop = Shop("close shop",59.33265,18.06061)
+        shop.add_product(Product("harry potter",0.9))
+
+        further_shop = Shop("far shop",59.35419,18.08681)
+        further_shop.add_product(Product("nike tiempo",0.9))
+
+        finder = PopularProductsFinder({"books":[shop],"sports":[further_shop]},[shop,further_shop])
+
+        products = finder.most_popular_products(self.search_coordinates,self.search_radius,["sports"],1000)
+        assert len(products) == 0
+

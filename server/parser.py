@@ -49,7 +49,10 @@ class PopularProductsFinder:
     def most_popular_products(self,center,radius,tags,quantity):
         tree = self.complete_locator
         if len(tags) != 0:
-            tree = ShopLocator(self.get_all_shops(tags))
+            shops = self.get_all_shops(tags)
+            if len(shops) == 0:
+                return []
+            tree = ShopLocator(shops)
         shops = tree.shops_within_distance(center,radius)
         return self.filter_products_in_shops(shops,quantity)
 
@@ -63,6 +66,9 @@ class PopularProductsFinder:
         return most_popular
 
     def get_all_shops(self,tags):
-        shops = [self.tags_mapping[tag] for tag in tags]
+        shops = []
+        for tag in tags:
+            if self.tags_mapping.has_key(tag):
+                shops.append(self.tags_mapping[tag])
         return Set([shop for sublist in shops for shop in sublist]) #Set removes the duplicates
 
