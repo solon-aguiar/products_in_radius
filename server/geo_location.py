@@ -5,15 +5,16 @@ from scipy.spatial import KDTree
 
 EARTH_RADIUS_IN_KM = 6378.137
 SEMI_MINOR_AXIS_IN_KM = 6356.7523142
-FLATENNING_FACTOR = 6.69437999014 * 0.001
+ESQ = 6.69437999014 * 0.001
 
 # Values are in KM
 def convert_to_cartesian(lat,lon):
+# Implementation based on https://code.google.com/p/pysatel/source/browse/trunk/pysatel/coord.py
     lat, lon = radians(lat), radians(lon)
-    xi = sqrt(1 - FLATENNING_FACTOR * sin(lat))
+    xi = sqrt(1 - ESQ * sin(lat))
     x = (EARTH_RADIUS_IN_KM / xi) * cos(lat) * cos(lon)
     y = (EARTH_RADIUS_IN_KM / xi) * cos(lat) * sin(lon)
-    z = (EARTH_RADIUS_IN_KM / xi * (1 - FLATENNING_FACTOR)) * sin(lat)
+    z = (EARTH_RADIUS_IN_KM / xi * (1 - ESQ)) * sin(lat)
     return x, y, z
 
 def euclidean_distance(distance):

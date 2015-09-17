@@ -13,6 +13,7 @@ def data_path():
     return current_app.config['DATA_PATH']
 
 def support_jsonp(f):
+    # Function from https://gist.github.com/aisipos/1094140
     """Wraps JSONified output for JSONP"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
