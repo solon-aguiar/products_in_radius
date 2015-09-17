@@ -54,7 +54,10 @@ class PopularProductsFinder:
         return self.filter_products_in_shops(shops,quantity)
 
     def filter_products_in_shops(self,shops,quantity):
-        products = [product for sublist in [shop.products for shop in shops] for product in sublist]
+        products = []
+        for shop in shops:
+            for product in shop.products:
+                products.append(ProductInShop(shop.lat,shop.lng,product.popularity,product.title))
         most_popular = sorted(products,key=lambda product:product.popularity)[0:quantity]
         most_popular.reverse()
         return most_popular

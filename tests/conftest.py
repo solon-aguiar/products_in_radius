@@ -24,7 +24,6 @@ class TestResponseClass(Flask.response_class):
 
 Flask.response_class = TestResponseClass
 
-
 def humanize_werkzeug_client(client_method):
     """Wraps a `werkzeug` client method (the client provided by `Flask`) to make
     it easier to use in tests.
@@ -66,7 +65,6 @@ def app(request):
     request.addfinalizer(teardown)
     return app
 
-
 @pytest.fixture(scope='function')
 def client(app, request):
     return app.test_client()
@@ -74,3 +72,4 @@ def client(app, request):
 @pytest.fixture(scope='function')
 def get(client):
     return humanize_werkzeug_client(client.get)
+

@@ -13,3 +13,10 @@ class Product:
     def __init__(self,title,popularity):
         self.title = title
         self.popularity = popularity
+
+class ProductInShop:
+    def __init__(self,lat,lng,popularity,title):
+        self.title = title
+        self.popularity = popularity
+        self.lat = lat
+        self.lng = lng
