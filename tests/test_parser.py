@@ -86,17 +86,24 @@ class TestPopularProductsFinder:
         closer_shop = Shop("shop nearby",59.33265,18.06364)
         closer_shop.add_product(Product("nike tiempo",0.9))
 
-        boundary_shop = Shop("shop in the boundary",59.33717,18.06637)
-        boundary_shop.add_product(Product("Game of Thrones",0.1))
-        boundary_shop.add_product(Product("Hunger Games",0.3))
-
-        finder = PopularProductsFinder({"books":[shop,boundary_shop],"sports":[closer_shop,shop]},[shop,closer_shop,boundary_shop])
+        finder = PopularProductsFinder({"books":[shop],"sports":[closer_shop,shop]},[shop,closer_shop])
 
         products = finder.most_popular_products(self.search_coordinates,self.search_radius,[],1000)
-        assert len(products) == 6
+        assert len(products) == 4
         assert products[0].title == "nike tiempo"
         assert products[1].title == "Ibrahimovic jersey"
         assert products[2].title == "harry potter"
         assert products[3].title == "harry potter II"
-        assert products[4].title == "Hunger Games"
-        assert products[5].title == "Game of Thrones"
+
+    def test_only_returns_the_desired_amount_of_products(self):
+        shop = Shop("close shop",59.33265,18.06061)
+        shop.add_product(Product("harry potter",0.9))
+
+        closer_shop = Shop("shop nearby",59.33265,18.06364)
+        closer_shop.add_product(Product("nike tiempo",0.9))
+
+        finder = PopularProductsFinder({},[shop,closer_shop])
+
+        products = finder.most_popular_products(self.search_coordinates,self.search_radius,[],1)
+        assert len(products) == 1
+        assert products[0].title == "harry potter"
