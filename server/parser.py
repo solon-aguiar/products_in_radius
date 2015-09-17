@@ -2,6 +2,8 @@
 
 import csv
 from entities import *
+from shop_locator import *
+from sets import Set
 
 class Parser:
     PRODUCTS_FILE = "products.csv"
@@ -38,24 +40,26 @@ class Parser:
     def absolute_path(self,file_path):
         return u"%s/%s" % (self.files_directory, file_path)
 
-class ProductsOracle:
-    def __init__(self,files_root):
-        input_data = Parser(files_root).parse()
-        self.tags_mapping = input_data[0]
-        self.shops = input_data[1]
-        self.complete_locator = self.create_tree(shops)
-
-    def create_tree(self,shops):
-        return ProductShopLocator(shops)
+class PopularProductsFinder:
+    def __init__(self,tags_to_shops,shops):
+        self.tags_mapping = tags_to_shops
+        self.shops = shops
+        self.complete_locator = ShopLocator(shops)
 
     def most_popular_products(self,center,radius,tags,quantity):
         tree = self.complete_locator
         if len(tags) != 0:
-            tree = create_tree(get_all_shops(tags))
-        shops = tree.products_within_distance(center,radius)
-        return filter_products_in_shops(shops,quantity)
+            tree = ShopLocator(self.get_all_shops(tags))
+        shops = tree.shops_within_distance(center,radius)
+        return self.filter_products_in_shops(shops,quantity)
 
     def filter_products_in_shops(self,shops,quantity):
-        products = [product for sublist in shops.products for product in sublist]
-        return sorted(products,key=lambda product:product.popularity)[0:quantity]
+        products = [product for sublist in [shop.products for shop in shops] for product in sublist]
+        most_popular = sorted(products,key=lambda product:product.popularity)[0:quantity]
+        most_popular.reverse()
+        return most_popular
+
+    def get_all_shops(self,tags):
+        shops = [self.tags_mapping[tag] for tag in tags]
+        return Set([shop for sublist in shops for shop in sublist]) #Set removes the duplicates
 
