@@ -94,7 +94,7 @@ class TestPopularProductsFinder:
 
     def test_only_returns_the_desired_amount_of_products(self):
         shop = Shop("close shop",59.33265,18.06061)
-        shop.add_product(Product("harry potter",0.9))
+        shop.add_product(Product("harry potter",0.95))
 
         closer_shop = Shop("shop nearby",59.33265,18.06364)
         closer_shop.add_product(Product("nike tiempo",0.9))
@@ -141,4 +141,17 @@ class TestPopularProductsFinder:
 
         products = finder.most_popular_products(self.search_coordinates,self.search_radius,["sports"],1000)
         assert len(products) == 0
+
+    def test_returns_the_products_in_descending_order_of_popularity(self):
+        shop = Shop("close shop",59.33265,18.06061)
+        shop.add_product(Product("harry potter",0.9))
+        shop.add_product(Product("harry potter II",0.8))
+        shop.add_product(Product("Ibrahimovic jersey",0.7))
+
+        finder = PopularProductsFinder({"books":[shop],"sports":[shop]},[shop])
+
+        products = finder.most_popular_products(self.search_coordinates,1000,[],2)
+        assert len(products) == 2
+        assert products[0].title == "harry potter"
+        assert products[1].title == "harry potter II"
 

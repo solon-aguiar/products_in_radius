@@ -61,9 +61,9 @@ class PopularProductsFinder:
         for shop in shops:
             for product in shop.products:
                 products.append(ProductInShop(shop.lat,shop.lng,product.popularity,product.title))
-        most_popular = sorted(products,key=lambda product:product.popularity)[0:quantity]
+        most_popular = sorted(products,key=lambda product:product.popularity)
         most_popular.reverse()
-        return most_popular
+        return most_popular[0:quantity]
 
     def get_all_shops(self,tags):
         shops = []
