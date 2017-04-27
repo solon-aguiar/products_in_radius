@@ -1,0 +1,6 @@
+id,shop_id,title,popularity,quantity
+1,1,light saber,0.9,10
+2,2,flag,0.7,0
+3,2,soccer ball,0.33,1
+4,2,darts,0.6,1000
+5,1,nerf gun,0.95,1
